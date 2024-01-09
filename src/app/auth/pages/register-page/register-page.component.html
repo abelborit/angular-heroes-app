@@ -1,1 +1,28 @@
-<p>register-page works!</p>
+<div class="flex flex-column">
+  <span class="text-lg mb-4">Register</span>
+
+  <mat-form-field>
+    <mat-label>User</mat-label>
+    <input type="text" matInput name="" id="" placeholder="User" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Name</mat-label>
+    <input type="text" matInput name="" id="" placeholder="Name" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Password</mat-label>
+    <input type="password" matInput name="" id="" placeholder="Password" />
+  </mat-form-field>
+
+  <button mat-button mat-flat-button color="primary">
+    <!-- para sacar lo íconos: https://fonts.google.com/icons?hl=es-419&icon.platform=android -->
+    <mat-icon>save</mat-icon>
+    Create Account
+  </button>
+
+  <div class="flex justify-content-end mt-5">
+    <a routerLink="/auth/login">Have account?</a>
+  </div>
+</div>
