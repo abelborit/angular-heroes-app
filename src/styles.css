@@ -9,3 +9,8 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+/* tomar todo el espacio que tenga disponible */
+.spacer {
+  flex: 1 1 auto;
+}
