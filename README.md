@@ -51,6 +51,25 @@ Aprender a utilizar Angular Material. Trabajaremos con muchos componentes de Ang
 ### \* NOTAS:
 
 - Levantar el backend local: `npm run backend-local`
+- Para trabajar con las variables de entorno en Angular es una forma distinta a cómo se trabajaría con los demás Frameworks ya que hay que crear en src una carpeta llamada environments y luego archivos environments.ts y según cómo se necesiten para producción, desarrollo, testing, etc.
+- Hay que decirle también que cuando se trabaje en desarrollo se trabaje con el environments.ts pero en producción, es decir, cuando se hace el build, entonces utilice el environments.prod.ts, para eso hay que hacer la configuración en angular.json en configurations -> production -> agregar "fileReplacements". Esta es una configuración que venía antes de Angular 15, es decir, de Angular 14 para abajo ya venía puesta por defecto aunque ahora ya no viene por defecto pero igual esta configuración es un estandar en la mayor parte de aplicaciones que hay de Angular 15 para abajo anteriormente aunque algunas aplicaciones de Angular 15 hacen esto manualmente como en este caso.
+
+  ```json (angular.json)
+  "configurations": {
+    "production": {
+      "fileReplacements": [
+        {
+          "replace": "src/environments/environments.ts",
+          "with": "src/environments/environments.prod.ts"
+        }
+      ],
+      ......
+    }
+    ......
+  }
+  ```
+
+  - Otra forma de hacerlo dinámicamente: https://christianlydemann.com/implementing-dynamic-environments-in-angular-for-avoiding-one-build-per-environment/
 
 ---
 
