@@ -43,7 +43,14 @@ Aprender a utilizar Angular Material. Trabajaremos con muchos componentes de Ang
   - `ng add @angular/material` (si aparece el ng add entonces hacerlo mediante ese ng add porque quiere decir que usa el Angular CLI y verifica la versión de Angular que estamos usando y dependiendo de eso entonces usaría la versión óptima del paquete que queremos instalar)
 - PrimeFlex (3.3.0): https://primeflex.org/
   - `npm install primeflex@3.3.0` -o- `<link rel="stylesheet" href="https://unpkg.com/primeflex@3.3.0/primeflex.min.css">`
+- json-server (0.17.4) (para hacer pruebas en local): https://www.npmjs.com/package/json-server // https://www.npmjs.com/package/json-server/v/0.17.4
+  - `npm i -D json-server@0.17.4`
+    - También se podría intentar con `npx json-server --watch data/db-hero.json` y ya no colocar el script o ya no instalar el paquete json-server con npm en la aplicación ya que se está haciendo uso del npx
 - ejemplo
+
+### \* NOTAS:
+
+- Levantar el backend local: `npm run backend-local`
 
 ---
 
