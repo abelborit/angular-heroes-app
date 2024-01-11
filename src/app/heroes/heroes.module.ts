@@ -9,14 +9,19 @@ import { LayoutPageComponent } from './layout/layout-page/layout-page.component'
 import { NewHeroPageComponent } from './pages/new-hero-page/new-hero-page.component';
 import { ListHeroPageComponent } from './pages/list-hero-page/list-hero-page.component';
 import { SearchHeroPageComponent } from './pages/search-hero-page/search-hero-page.component';
+import { HeroCardComponent } from './components/hero-card/hero-card.component';
 
 @NgModule({
   declarations: [
+    /* Pages */
     HeroPageComponent,
     LayoutPageComponent,
     NewHeroPageComponent,
     ListHeroPageComponent,
     SearchHeroPageComponent,
+
+    /* Components */
+    HeroCardComponent,
   ],
   imports: [CommonModule, HeroesRoutingModule, MaterialModule],
 })
