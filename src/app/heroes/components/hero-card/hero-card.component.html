@@ -1,17 +1,23 @@
 <mat-card>
   <mat-card-header>
-    <mat-card-title>{{ heroInfo?.superhero }}</mat-card-title>
-    <mat-card-subtitle>{{ heroInfo?.alter_ego }}</mat-card-subtitle>
+    <mat-card-title>{{ heroInfo.superhero }}</mat-card-title>
+    <mat-card-subtitle>{{ heroInfo.alter_ego }}</mat-card-subtitle>
   </mat-card-header>
 
+  <img
+    mat-card-image
+    [src]="heroInfo | heroImage"
+    [alt]="heroInfo.superhero || '-Without Hero Name-'"
+  />
+
   <mat-card-content class="mt-2">
-    <h4>{{ heroInfo?.publisher }}</h4>
+    <h4>{{ heroInfo.publisher }}</h4>
     <p>
-      <strong>First apparition </strong> {{ heroInfo?.first_appearance }}
+      <strong>First apparition </strong> {{ heroInfo.first_appearance }}
       <br />
       <mat-chip-listbox>
         <mat-chip
-          *ngFor="let name of heroInfo?.characters?.split(',') | slice : 0 : 4"
+          *ngFor="let name of heroInfo.characters.split(',') | slice : 0 : 4"
         >
           {{ name }}
         </mat-chip>
@@ -25,7 +31,7 @@
     <button
       mat-button
       color="primary"
-      [routerLink]="['/heroes/edit', heroInfo?.id]"
+      [routerLink]="['/heroes/edit', heroInfo.id]"
     >
       <mat-icon>edit</mat-icon>
       Edit
@@ -33,7 +39,7 @@
 
     <span class="spacer"></span>
 
-    <button mat-button [routerLink]="['/heroes/id', heroInfo?.id]">
+    <button mat-button [routerLink]="['/heroes/id', heroInfo.id]">
       <mat-icon>more_horiz</mat-icon>
       More info
     </button>
