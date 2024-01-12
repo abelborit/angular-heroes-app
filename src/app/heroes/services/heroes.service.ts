@@ -21,4 +21,12 @@ export class HeroesService {
       .get<Hero>(`${this.baseUrl}/heroes/${idHero}`)
       .pipe(catchError(() => of(undefined)));
   }
+
+  handleGetSuggestions(query: string): Observable<Hero[]> {
+    /* aquí puede regresar un array de Hero o un array vacío si se coloca algún query de búsqueda que no exista */
+    /* como se está usando json-server entonces tiene varios parámetros para usar: https://www.npmjs.com/package/json-server#routes */
+    return this.httpClient.get<Hero[]>(
+      `${this.baseUrl}/heroes?q=${query}&_limit=6`
+    );
+  }
 }

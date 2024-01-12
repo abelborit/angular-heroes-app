@@ -1,1 +1,58 @@
-<p>search-hero-page works!</p>
+<div class="flex flex-column p-2">
+  <h3>Heroes Searcher</h3>
+
+  <mat-form-field>
+    <mat-label>Search your favorite hero...</mat-label>
+    <input
+      type="text"
+      matInput
+      [formControl]="searchInput"
+      (input)="handleSearchHero()"
+      [matAutocomplete]="auto"
+    />
+
+    <!-- tiene una referencia local #auto que es el matAutocomplete que básicamente le va a indicar a qué coordenadas de qué elemento apuntará donde esté todo lo necesario y por eso se coloca [matAutocomplete]="auto" en el input -->
+    <!-- Angular Material en este <mat-autocomplete>....</mat-autocomplete> tiene un evento (optionSelected)="" donde se le pasará una función que implementamos y esta función recibe como argumento el $event tal cual como lo hacíamos con los decoradores @Input o @Output -->
+    <mat-autocomplete
+      autoActiveFirstOption
+      #auto="matAutocomplete"
+      (optionSelected)="handleSelectedOption($event)"
+    >
+      <mat-option *ngFor="let hero of heroes" [value]="hero">
+        {{ hero.superhero }}
+      </mat-option>
+
+      <!-- aquí nos aparece que el searchInput.value puede ser undefined entonces se puede colocar searchInput.value! o sino hacer una validación antes de que si existe searchInput.value entonces recién que lo tome y nos evitamos estar colocando searchInput.value? -->
+      <mat-option
+        *ngIf="
+          heroes.length === 0 &&
+          searchInput.value &&
+          searchInput.value.length > 0
+        "
+        value=""
+      >
+        <b>Not found nothing with this query: </b>{{ searchInput.value }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <pre>{{ selectedHero | json }}</pre>
+
+  <button
+    *ngIf="selectedHero"
+    class="col-3"
+    mat-button
+    color="primary"
+    mat-raised-button
+    [routerLink]="['/heroes/id', selectedHero.id]"
+  >
+    View Hero
+  </button>
+
+  <!-- si colocamos {{ searchInput | json }} entonces nos aparecerá un error en consola "Converting circular structure to JSON....." que quiere decir que se está convirtiendo una estructura circular a JSON que básicamente significa que hay un objeto que renderiza otro objeto que renderiza otro objeto y así sucesivamente como un loop infinito dependiendo de las solicitudes. Pero lo importante aquí es hacerle caso a que nos aparecerán muchas opciones ya que está enlazado al [formControl], por ejemplo nos aparecen opciones de si se tocó el input, si hubo un error, etc. También se puede colocar {{ searchInput.value | json }} o {{ searchInput.value }} para tener el valor del input mientras se escribe -->
+  <!-- entonces al hacerlo de esta forma como formularios reactivos y enlazarlo con el [formControl] evitamos usar también la sintaxis de caja de bananas aplicando el two way data binding [()] que es una forma que no se debería de hacer -->
+  <!-- searchInput.value: {{ searchInput.value | json }} <br />
+  searchInput.touched: {{ searchInput.touched | json }} <br />
+  searchInput.pristine: {{ searchInput.pristine | json }} <br />
+  searchInput.disable: {{ searchInput.disable | json }} <br /> -->
+</div>
