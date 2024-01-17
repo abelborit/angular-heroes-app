@@ -52,6 +52,12 @@ export class NewHeroPageComponent {
 
     /* si se manda de esta forma "this.heroesService.updateHero(this.heroForm.value);" no son tipos compatibles, es decir, lo que se manda del formulario con lo que updateHero espera recibir técnicamente son lo mismo hasta cierto punto pero a la largo no lo son, por ejemplo, se espera recibir algo X y se manda algo Y pero que se ve como si fuera algo X, entonces técnicamente son lo mismo hasta cierto punto pero al final no lo son. En este aspecto TypeScript es bien restringido y aunque este formulario cumple la interface correctamente no se podría mandar de esa forma */
     /* para solucionar lo anterior se utilizarán los getters dentro del componente que es la función que creamos getCurrentHero() y ahora ver si se hace la creación o actualización de un héroe */
+
+    /* CREAR HERO */
+    /* al crear el hero el id lo genera automáticamente el json-server, nosotros solo nos encargamos enviarle la data: https://stackoverflow.com/questions/53086951/json-server-strange-autoincrement-id */
+    this.heroesService.addHero(this.getCurrentHero).subscribe((response) => {
+      console.log(response);
+    });
   }
 }
 
