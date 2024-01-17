@@ -177,6 +177,15 @@
       "first_appearance": "The Fantastic Four N.º 52 (1966)",
       "characters": "Chadwick Boseman",
       "alternative_img": "https://i.pinimg.com/originals/e2/51/72/e2517271160a1889be578cbbe24fec2d.jpg"
+    },
+    {
+      "id": "g27I2Sq",
+      "superhero": "Hulk",
+      "publisher": "Marvel Comics",
+      "alter_ego": "Bruce Banner",
+      "first_appearance": "The Incredible Hulk #1 (mayo de 1962)",
+      "characters": "Edward Norton, Mark Ruffalo",
+      "alternative_img": "https://i0.wp.com/www.universomarvel.com/wp-content/uploads/2023/03/image003.jpg?ssl=1"
     }
   ]
 }

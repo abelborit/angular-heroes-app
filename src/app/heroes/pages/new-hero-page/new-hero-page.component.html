@@ -1,85 +1,116 @@
-<h1>
-  {{ getCurrentHero.id ? "Edit Hero" : "Add Hero" }}
-</h1>
+<ng-template #divLoading>
+  <mat-grid-list cols="1" rowHeight="200px">
+    <mat-grid-tile>
+      <mat-spinner [diameter]="60" color="warn"></mat-spinner>
+    </mat-grid-tile>
+  </mat-grid-list>
+</ng-template>
 
-<mat-divider class="mb-4"></mat-divider>
+<div
+  *ngIf="
+    showLoadingWhenCreateHero || showLoadingWhenUpdateHero;
+    else divLoading
+  "
+  class="grid p-3"
+>
+  <h1>
+    {{ getCurrentHero.id ? "Edit Hero" : "Add Hero" }}
+  </h1>
 
-<div class="grid">
-  <div class="col-12 sm:col-6">
-    <mat-card>
-      <mat-card-content>
-        <!-- enlazar este formulario con el heroForm que es un formulario reactivo usando el [formGroup]="" y luego ir conectando campo por campo -->
-        <!-- al estar los campos ya conectados, el formulario reactivo enlazado y utilizar el required de Angular Material vemos que ya tendrá la validación, por ejemplo, si entramos a algún campo requerido y luego vamos a otro campo veremos que se pondrá rojo ya que está vacío y ahí podríamos colcoar algún mensaje más explícito para que se cumpla alguna expresión regular o algo similar -->
-        <form class="grid" [formGroup]="heroForm" (ngSubmit)="handleSubmit()">
-          <mat-form-field class="col-12 sm:col-6">
-            <mat-label>Super Hero</mat-label>
-            <!-- el required es más que todo para Angular Material para que le añada el asterisco de "Campo Obligatorio" -->
-            <!-- para conectar el input con el heroForm se utilizará el formControlName="" pero vemos que no tendrá el intellisense ya que básicamente le pasaremos un string, si queremos que sea dinámico podríamos colocarlo como [formControlName]="" pero en general este sería el nombre del campo el cual va a corresponder a la propiedad de heroForm -->
-            <input type="text" matInput required formControlName="superhero" />
-          </mat-form-field>
+  <mat-divider class="mb-4"></mat-divider>
 
-          <mat-form-field class="col-12 sm:col-6">
-            <mat-label>Alter Ego</mat-label>
-            <input type="text" matInput required formControlName="alter_ego" />
-          </mat-form-field>
+  <div class="grid">
+    <div class="col-12 sm:col-6">
+      <mat-card>
+        <mat-card-content>
+          <!-- enlazar este formulario con el heroForm que es un formulario reactivo usando el [formGroup]="" y luego ir conectando campo por campo -->
+          <!-- al estar los campos ya conectados, el formulario reactivo enlazado y utilizar el required de Angular Material vemos que ya tendrá la validación, por ejemplo, si entramos a algún campo requerido y luego vamos a otro campo veremos que se pondrá rojo ya que está vacío y ahí podríamos colcoar algún mensaje más explícito para que se cumpla alguna expresión regular o algo similar -->
+          <form class="grid" [formGroup]="heroForm" (ngSubmit)="handleSubmit()">
+            <mat-form-field class="col-12 sm:col-6">
+              <mat-label>Super Hero</mat-label>
+              <!-- el required es más que todo para Angular Material para que le añada el asterisco de "Campo Obligatorio" -->
+              <!-- para conectar el input con el heroForm se utilizará el formControlName="" pero vemos que no tendrá el intellisense ya que básicamente le pasaremos un string, si queremos que sea dinámico podríamos colocarlo como [formControlName]="" pero en general este sería el nombre del campo el cual va a corresponder a la propiedad de heroForm -->
+              <input
+                type="text"
+                matInput
+                required
+                formControlName="superhero"
+              />
+            </mat-form-field>
 
-          <mat-form-field class="col-12">
-            <mat-label>First Appearance</mat-label>
-            <input
-              type="text"
-              matInput
-              required
-              formControlName="first_appearance"
-            />
-          </mat-form-field>
+            <mat-form-field class="col-12 sm:col-6">
+              <mat-label>Alter Ego</mat-label>
+              <input
+                type="text"
+                matInput
+                required
+                formControlName="alter_ego"
+              />
+            </mat-form-field>
 
-          <mat-form-field class="col-12">
-            <mat-label>Characters</mat-label>
-            <input type="text" matInput required formControlName="characters" />
-          </mat-form-field>
+            <mat-form-field class="col-12">
+              <mat-label>First Appearance</mat-label>
+              <input
+                type="text"
+                matInput
+                required
+                formControlName="first_appearance"
+              />
+            </mat-form-field>
 
-          <mat-form-field class="col-12">
-            <mat-label>Publisher</mat-label>
-            <mat-select required formControlName="publisher">
-              <mat-option
-                *ngFor="let publisher of publishers"
-                [value]="publisher.id"
-              >
-                {{ publisher.value }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field class="col-12">
+              <mat-label>Characters</mat-label>
+              <input
+                type="text"
+                matInput
+                required
+                formControlName="characters"
+              />
+            </mat-form-field>
 
-          <mat-form-field class="col-12">
-            <mat-label>Alternative Image</mat-label>
-            <input type="text" matInput formControlName="alternative_img" />
-          </mat-form-field>
-        </form>
+            <mat-form-field class="col-12">
+              <mat-label>Publisher</mat-label>
+              <mat-select required formControlName="publisher">
+                <mat-option
+                  *ngFor="let publisher of publishers"
+                  [value]="publisher.id"
+                >
+                  {{ publisher.value }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
 
-        <div class="flex justify-content-between">
-          <button mat-flat-button color="warn" *ngIf="getCurrentHero.id">
-            <mat-icon>delete</mat-icon>
-            Delete
-          </button>
-          <!-- se coloca este <span></span> solo para que si el botón de Delete no está entonces igual funcione bien la clase justify-content-between para separar los elementos ya que habrían 2 elementos y si está el botón de Delete entonces igual funcionaría bien la clase pero habrían 3 elementos -->
-          <span></span>
+            <mat-form-field class="col-12">
+              <mat-label>Alternative Image</mat-label>
+              <input type="text" matInput formControlName="alternative_img" />
+            </mat-form-field>
+          </form>
 
-          <!-- se coloca aquí también el handleSubmit() ya que el botón no está dentro del fomulario (un botón de tipo submit al estar dentro de un formulario y al presionar la tecla enter entonces se hace el submit automáticamente) -->
-          <button mat-flat-button color="primary" (click)="handleSubmit()">
-            <mat-icon>save</mat-icon>
-            Save
-          </button>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
+          <div class="flex justify-content-between">
+            <button mat-flat-button color="warn" *ngIf="getCurrentHero.id">
+              <mat-icon>delete</mat-icon>
+              Delete
+            </button>
+            <!-- se coloca este <span></span> solo para que si el botón de Delete no está entonces igual funcione bien la clase justify-content-between para separar los elementos ya que habrían 2 elementos y si está el botón de Delete entonces igual funcionaría bien la clase pero habrían 3 elementos -->
+            <span></span>
 
-  <div class="col-12 sm:col-6">
-    <mat-card>
-      <img [src]="getCurrentHero | heroImage" alt="image hero" matCardImage />
+            <!-- se coloca aquí también el handleSubmit() ya que el botón no está dentro del fomulario (un botón de tipo submit al estar dentro de un formulario y al presionar la tecla enter entonces se hace el submit automáticamente) -->
+            <button mat-flat-button color="primary" (click)="handleSubmit()">
+              <mat-icon>save</mat-icon>
+              Save
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
 
-      <!-- NO FUNCIONA DE ESTA FORMA PORQUE: por ejemplo, se espera recibir algo X y se manda algo Y pero que se ve como si fuera algo X -->
-      <!-- <img [src]="heroForm.value| heroImage" alt="image hero" matCardImage /> -->
-    </mat-card>
+    <div class="col-12 sm:col-6">
+      <mat-card>
+        <img [src]="getCurrentHero | heroImage" alt="image hero" matCardImage />
+
+        <!-- NO FUNCIONA DE ESTA FORMA PORQUE: por ejemplo, se espera recibir algo X y se manda algo Y pero que se ve como si fuera algo X -->
+        <!-- <img [src]="heroForm.value| heroImage" alt="image hero" matCardImage /> -->
+      </mat-card>
+    </div>
   </div>
 </div>

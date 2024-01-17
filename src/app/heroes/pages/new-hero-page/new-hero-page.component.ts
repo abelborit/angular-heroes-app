@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Hero, Publisher } from '../../interfaces/hero.interface';
 import { HeroesService } from '../../services/heroes.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { switchMap } from 'rxjs';
+import { delay, switchMap, tap } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -24,6 +24,8 @@ export class NewHeroPageComponent implements OnInit {
     characters: new FormControl(''),
     alternative_img: new FormControl(''),
   });
+  public showLoadingWhenCreateHero?: boolean;
+  public showLoadingWhenUpdateHero?: boolean;
 
   public publishers = [
     {
@@ -44,11 +46,22 @@ export class NewHeroPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    /* si no incluye edit en la url entonces que no haga nada */
-    if (!this.router.url.includes('edit')) return;
+    /* si no incluye edit en la url entonces que no haga nada porque se creará un heroe */
+    if (!this.router.url.includes('edit')) {
+      this.showLoadingWhenCreateHero = true;
+      this.showLoadingWhenUpdateHero = false;
+      return;
+    }
 
     this.activatedRoute.params
-      .pipe(switchMap(({ id }) => this.heroesService.handleGetHeroById(id)))
+      .pipe(
+        delay(1000),
+        switchMap(({ id }) => this.heroesService.handleGetHeroById(id)),
+        tap(() => {
+          this.showLoadingWhenCreateHero = false;
+          this.showLoadingWhenUpdateHero = true;
+        })
+      )
       .subscribe((response) => {
         if (!response) return this.router.navigateByUrl('/');
 
@@ -85,6 +98,12 @@ export class NewHeroPageComponent implements OnInit {
       /* este updateHero es un observable y nos tenemos que suscribir para que se dispare ese observable */
       this.heroesService
         .updateHero(this.getCurrentHero)
+        .pipe(
+          tap(() => {
+            this.showLoadingWhenCreateHero = false;
+            this.showLoadingWhenUpdateHero = true;
+          })
+        )
         .subscribe((response) => {
           console.log(response);
           this.handleShowMatSnackBar(`${response.superhero} updated!`);
@@ -95,12 +114,20 @@ export class NewHeroPageComponent implements OnInit {
 
     /* CREAR HERO */
     /* al crear el hero el id lo genera automáticamente el json-server, nosotros solo nos encargamos enviarle la data: https://stackoverflow.com/questions/53086951/json-server-strange-autoincrement-id */
-    this.heroesService.addHero(this.getCurrentHero).subscribe((response) => {
-      console.log(response);
-      /* al crear el hero entonces me navegará al fomrulario de edición de ese hero creado */
-      this.router.navigate(['/heroes/edit', response.id]);
-      this.handleShowMatSnackBar(`${response.superhero} created!`);
-    });
+    this.heroesService
+      .addHero(this.getCurrentHero)
+      .pipe(
+        tap(() => {
+          this.showLoadingWhenCreateHero = true;
+          this.showLoadingWhenUpdateHero = false;
+        })
+      )
+      .subscribe((response) => {
+        console.log(response);
+        /* al crear el hero entonces me navegará al fomrulario de edición de ese hero creado */
+        this.router.navigate(['/heroes/edit', response.id]);
+        this.handleShowMatSnackBar(`${response.superhero} created!`);
+      });
   }
 
   handleShowMatSnackBar(message: string): void {
