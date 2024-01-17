@@ -14,3 +14,13 @@ export enum Publisher {
   DCComics = 'DC Comics',
   MarvelComics = 'Marvel Comics',
 }
+
+/* ******************************************************************************************************************* */
+/* ¿Porqué para se crea la interface Hero para implementar sus propiedades y no una clase? */
+/*
+La razón de utilizar una interfaz Hero en lugar de una clase en este caso es principalmente para definir la estructura de los datos de los héroes, pero sin implementar ninguna lógica adicional o funcionalidad. Las interfaces en TypeScript son útiles para definir la forma o estructura de un objeto, es decir, los nombres y tipos de sus propiedades, pero no pueden contener implementaciones de métodos.
+
+En este escenario particular, la interfaz Hero actúa como una especie de contrato que define cómo deben ser los objetos de tipo Hero que se utilizan en la aplicación. Al utilizar una interfaz, estás asegurando que todas las instancias de Hero tengan las mismas propiedades con los mismos nombres y tipos, lo que ayuda a garantizar la consistencia de los datos en toda la aplicación.
+
+En cambio, si se utilizara una clase para definir Hero, podrías incluir métodos y lógica adicional, lo que puede no ser necesario en esta situación en particular. Al usar una interfaz, se está indicando que solo se necesita la estructura de los datos de los héroes sin comportamiento adicional.
+*/
