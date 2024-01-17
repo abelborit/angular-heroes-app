@@ -1,14 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Hero, Publisher } from '../../interfaces/hero.interface';
 import { HeroesService } from '../../services/heroes.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-new-hero-page',
   templateUrl: './new-hero-page.component.html',
   styleUrls: ['./new-hero-page.component.css'],
 })
-export class NewHeroPageComponent {
+export class NewHeroPageComponent implements OnInit {
   /* una consideración a tener en cuenta es que cuando se trabajen con formularios reactivos es necesario que cada elemento de nuestro formulario tiene que estar adentro de un elemento HTML padre, es decir, si se coloca el id, superhero, publisher dentro del formulario entonces deben de tener un elemento HTML padre que los envuelva, por ejemplo, un div, form, etc... pero debe tener un elemento HTML padre donde en este caso usaremos una etiqueta <form></form> */
   /* aquí se podrían ir creando todas los inputs que voy a necesitar para el formulario y que sean un new FormControl() y asignarle un valor por defecto como por ejemplo public id = new FormControl(''); luego tener un public name = new FormControl(''); pero al hacerlo así no sería un formulario reactivo, serían solo propiedades reactivas que tenemos en nuestro componente, es decir, pequeñas piezas de controles que tenemos aquí en nuestro componente */
   /* pero para que sea un formulario reactivo crearemos una propiedad general que sea un FormGroup() y que tenga todos los inputs del formulario que serán FormControl(). Para las propiedades se están colocando el valor inicial como un string vacío entonces cada propiedad puede ser bien un string o null (ver eso si se presiona la tecla ctrl o control y luego se pasa el mouse por encima de la propiedad por ejemplo del id o superhero, etc...) pero en el caso del publisher no podría ser string o null ya que siempre tendría que venir, entonces vemor que el FormControl es un genérico donde se le puede colocar el tipo de dato que va a fluir dentro de él */
@@ -33,7 +35,28 @@ export class NewHeroPageComponent {
     },
   ];
 
-  constructor(private heroesService: HeroesService) {}
+  constructor(
+    private heroesService: HeroesService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    /* si no incluye edit en la url entonces que no haga nada */
+    if (!this.router.url.includes('edit')) return;
+
+    this.activatedRoute.params
+      .pipe(switchMap(({ id }) => this.heroesService.handleGetHeroById(id)))
+      .subscribe((response) => {
+        if (!response) return this.router.navigateByUrl('/');
+
+        /* el reset hace dos funciones:
+        1. Regresa el formulario a su valor original
+        2. Si le mandamos un argumento entonces automáticamente establece los campos cuyos nombres coincidan con los de mi formulario */
+        this.heroForm.reset(response);
+        return;
+      });
+  }
 
   /* hacer que un objeto luzca como si fuera un Hero y con esto evitar el problema de abajo. También al hacerlo de esta forma y tener el objeto como si fuera un tipo Hero ya se puede utilizar en el HTML por ejemplo para colocar la imagen. También tenemos ya los datos de forma centralizada */
   get getCurrentHero(): Hero {
@@ -52,6 +75,20 @@ export class NewHeroPageComponent {
 
     /* si se manda de esta forma "this.heroesService.updateHero(this.heroForm.value);" no son tipos compatibles, es decir, lo que se manda del formulario con lo que updateHero espera recibir técnicamente son lo mismo hasta cierto punto pero a la largo no lo son, por ejemplo, se espera recibir algo X y se manda algo Y pero que se ve como si fuera algo X, entonces técnicamente son lo mismo hasta cierto punto pero al final no lo son. En este aspecto TypeScript es bien restringido y aunque este formulario cumple la interface correctamente no se podría mandar de esa forma */
     /* para solucionar lo anterior se utilizarán los getters dentro del componente que es la función que creamos getCurrentHero() y ahora ver si se hace la creación o actualización de un héroe */
+
+    /* ACTUALIZAR HERO */
+    /* se puede utilizar el this.getCurrentHero.id o this.heroForm.value.id ya que prácticamente están conectados */
+    if (this.getCurrentHero.id) {
+      /* se manda el this.getCurrentHero como una propiedad y NO como función ya que es un getter */
+      /* este updateHero es un observable y nos tenemos que suscribir para que se dispare ese observable */
+      this.heroesService
+        .updateHero(this.getCurrentHero)
+        .subscribe((response) => {
+          console.log(response);
+        });
+      /* se manda el return para salir del scope de esta validación y también de la función handleSubmit y ya no realice nada más */
+      return;
+    }
 
     /* CREAR HERO */
     /* al crear el hero el id lo genera automáticamente el json-server, nosotros solo nos encargamos enviarle la data: https://stackoverflow.com/questions/53086951/json-server-strange-autoincrement-id */
