@@ -1,4 +1,6 @@
-<h1>Edit / Add Hero <small>Batman</small></h1>
+<h1>
+  {{ getCurrentHero.id ? "Edit Hero" : "Add Hero" }}
+</h1>
 
 <mat-divider class="mb-4"></mat-divider>
 
@@ -55,10 +57,12 @@
         </form>
 
         <div class="flex justify-content-between">
-          <button mat-flat-button color="warn">
+          <button mat-flat-button color="warn" *ngIf="getCurrentHero.id">
             <mat-icon>delete</mat-icon>
             Delete
           </button>
+          <!-- se coloca este <span></span> solo para que si el botón de Delete no está entonces igual funcione bien la clase justify-content-between para separar los elementos ya que habrían 2 elementos y si está el botón de Delete entonces igual funcionaría bien la clase pero habrían 3 elementos -->
+          <span></span>
 
           <!-- se coloca aquí también el handleSubmit() ya que el botón no está dentro del fomulario (un botón de tipo submit al estar dentro de un formulario y al presionar la tecla enter entonces se hace el submit automáticamente) -->
           <button mat-flat-button color="primary" (click)="handleSubmit()">

@@ -4,6 +4,7 @@ import { Hero, Publisher } from '../../interfaces/hero.interface';
 import { HeroesService } from '../../services/heroes.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-new-hero-page',
@@ -38,7 +39,8 @@ export class NewHeroPageComponent implements OnInit {
   constructor(
     private heroesService: HeroesService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private matSnackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -85,6 +87,7 @@ export class NewHeroPageComponent implements OnInit {
         .updateHero(this.getCurrentHero)
         .subscribe((response) => {
           console.log(response);
+          this.handleShowMatSnackBar(`${response.superhero} updated!`);
         });
       /* se manda el return para salir del scope de esta validación y también de la función handleSubmit y ya no realice nada más */
       return;
@@ -94,7 +97,14 @@ export class NewHeroPageComponent implements OnInit {
     /* al crear el hero el id lo genera automáticamente el json-server, nosotros solo nos encargamos enviarle la data: https://stackoverflow.com/questions/53086951/json-server-strange-autoincrement-id */
     this.heroesService.addHero(this.getCurrentHero).subscribe((response) => {
       console.log(response);
+      /* al crear el hero entonces me navegará al fomrulario de edición de ese hero creado */
+      this.router.navigate(['/heroes/edit', response.id]);
+      this.handleShowMatSnackBar(`${response.superhero} created!`);
     });
+  }
+
+  handleShowMatSnackBar(message: string): void {
+    this.matSnackBar.open(message, 'okey', { duration: 2500 });
   }
 }
 
