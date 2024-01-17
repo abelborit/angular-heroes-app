@@ -47,17 +47,17 @@ export class HeroesService {
 
   /* cuando se elimina el héroe la primera vez nos da un status 200 de que se eliminó correctamente pero si se quiere eliminar de nuevo nos aparece un status 404 de not found porque ya se eliminó y no existe, entonces sería bueno que si se llama este deleteHeroById tener un valor boolean indicando si se eliminó o no correctamente */
   deleteHeroById(id: string): Observable<boolean> {
-    /* aquí el delete emitirá un objeto vació entonces se puede quitar su tipado o sino puede emitir un error (en caso no exista lo que se quiere eliminar) el cual será manejado por el pipe catchError(). Para los pipe de catchError se puede usar una forma corta ya que no estamos usando el error: catchError(() => of(false)), y para el map también tiene su forma corta ya que no estamos usando el response: map(() => true) */
+    /* aquí el delete emitirá un objeto vacío si se elimina el hero entonces se puede quitar su tipado o también puede emitir un error (en caso no exista lo que se quiere eliminar) el cual será manejado por el pipe catchError(). Para los pipe de catchError se puede usar una forma corta ya que no estamos usando el error: catchError(() => of(false)), y para el map también tiene su forma corta ya que no estamos usando el response: map(() => true) */
     return this.httpClient.delete(`${this.baseUrl}/heroes/${id}`).pipe(
+      map((response) => {
+        /* con el map no importa la respuesta que se tenga, este map sirve para transformar la respuesta. Entonces si es una solicitud exitosa, es decir, no pasó por el catchError() quiere decir que todo está bien y nos dará un response que será un objeto vacío pero en este caso este response no nos importa que sea ya que con el map retornaremos un true. Con lo realizado entonces esto ya cumplió el tipado de regresar un observable de tipo boolean */
+        console.log(response);
+        return true;
+      }),
       catchError((error) => {
         console.log(error);
         /* false para indicar que no se borró entonces eso indica que hubo algún error ya sea de que no se encontró lo que se quería eliminar o hubo un problema de conexión */
         return of(false);
-      }),
-      map((response) => {
-        /* con el map no importa la respuesta que se tenga, este map sirve para transformar la respuesta. Entonces si es una solicitud exitosa, es decir, no pasó por el catchError() quiere decir que todo bien y nos dará un response pero ese response en este caso no nos importa que sea ya que con el map retornaremos un true. Con eso ya tenemos el tipado de regresar un observable de tipo boolean */
-        console.log(response);
-        return true;
       })
     );
   }

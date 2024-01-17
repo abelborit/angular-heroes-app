@@ -3,8 +3,10 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Hero, Publisher } from '../../interfaces/hero.interface';
 import { HeroesService } from '../../services/heroes.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { delay, switchMap, tap } from 'rxjs';
+import { delay, filter, switchMap, tap } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-new-hero-page',
@@ -42,7 +44,8 @@ export class NewHeroPageComponent implements OnInit {
     private heroesService: HeroesService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private matSnackBar: MatSnackBar
+    private matSnackBar: MatSnackBar,
+    private matDialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -127,6 +130,63 @@ export class NewHeroPageComponent implements OnInit {
         /* al crear el hero entonces me navegará al fomrulario de edición de ese hero creado */
         this.router.navigate(['/heroes/edit', response.id]);
         this.handleShowMatSnackBar(`${response.superhero} created!`);
+      });
+  }
+
+  handleDeleteHero() {
+    if (!this.getCurrentHero.id) throw new Error('Hero id is required');
+
+    /* aquí se está enviando una data que tendrá los valores del heroForm */
+    const dialogRef = this.matDialog.open(ConfirmDialogComponent, {
+      data: this.heroForm.value,
+    });
+
+    /* FORMA 1: subscribe() dentro de otro subscribe() */
+    // /* aquí se está subscribiendo y este afterClosed solo emite una vez cuando el formulario se cierra y por eso no hay un ngOnDestroy para hacer la limpieza porque internamente este afterClosed tiene como un operador take one (recibe un elemento y se cierra) y por eso podemos hacerlo de esta manera */
+    // dialogRef.afterClosed().subscribe((result) => {
+    //   /* este result es el resultado del diálogo */
+    //   // console.log('The dialog was closed');
+    //   // console.log({ result });
+
+    //   /* si el result es undefined (cuando se hace click afuera del diálogo) o false (cuando se cancela el diálogo) entonces que no haga nada */
+    //   if (!result) return;
+
+    //   this.heroesService
+    //     .deleteHeroById(this.getCurrentHero.id)
+    //     .subscribe((response) => {
+    //       /* el response de deleteHeroById es un true cuando SI fue eliminado o false cuando NO fue eliminado */
+    //       if (response) {
+    //         this.router.navigate(['/heroes/list']);
+    //       }
+    //     });
+    // });
+
+    /* FORMA 2: sintaxis mejorada usando pipes de RxJS */
+    /*
+    .pipe()
+      1. Filtramos el resultado positivo -> filter()
+      2. Si es positivo disparamos la eliminación del héroe -> switchMap()
+      3. Efecto secundario para saber cómo va el result de la eliminación anterior hecha con el switchMap() -> tap()
+      4. Si se elimina entonces sería que todo está bien y es un true y lo dejamos pasar en el filtrado -> filter()
+    .subscribe()
+      5. Al final si todo está bien entonces nos da un true y eso quiere decir que pasará el filter() y luego se suscribe al observable y realizará la navegación a la ruta /heroes/list
+    */
+    dialogRef
+      .afterClosed()
+      .pipe(
+        /* el filter es para filtrar y si la condición se cumple entonces lo deja pasar y si no cumple entonces lo bloquea. El result viene cuando se realiza alguna interacción con el modal de diálogo (cuando se hace click afuera del diálogo, cuando se hace click en cancelar el diálogo o cuando se confirma el diálogo) */
+        filter((result: boolean) => result),
+        switchMap(() =>
+          /* Llamar un servicio utilizando switchMap en RxJS es una práctica común y eficaz, especialmente cuando se trata de gestionar flujos de datos asincrónicos. El switchMap está diseñado para manejar las solicitudes HTTP u otras operaciones asincrónicas, y es útil para cancelar solicitudes pendientes y emitir solo los resultados de la solicitud más reciente, lo que puede evitar resultados inesperados debido a solicitudes fuera de orden. En este caso, utilizamos switchMap para obtener un héroe por su ID, lo que es una práctica sólida */
+          this.heroesService.deleteHeroById(this.getCurrentHero.id)
+        ),
+        tap((result) => console.log({ result })),
+        filter((wasDeleted: boolean) => wasDeleted) // wasDeleted es para saber más explícitamente qué se está realizando pero se puede colocar también como result o cualquier otro nombre a nuestra preferencia
+      )
+      .subscribe((result) => {
+        console.log({ result });
+        this.router.navigate(['/heroes/list']);
+        this.handleShowMatSnackBar(`${this.getCurrentHero.superhero} deleted!`);
       });
   }
 

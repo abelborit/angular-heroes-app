@@ -130,14 +130,6 @@
       "characters": "Bruce Banner"
     },
     {
-      "id": "marvel-wolverine",
-      "superhero": "Wolverine",
-      "publisher": "Marvel Comics",
-      "alter_ego": "James Howlett",
-      "first_appearance": "The Incredible Hulk #180",
-      "characters": "James Howlett"
-    },
-    {
       "id": "marvel-daredevil",
       "superhero": "Daredevil",
       "publisher": "Marvel Comics",

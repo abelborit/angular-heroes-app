@@ -87,7 +87,12 @@
           </form>
 
           <div class="flex justify-content-between">
-            <button mat-flat-button color="warn" *ngIf="getCurrentHero.id">
+            <button
+              mat-flat-button
+              color="warn"
+              *ngIf="getCurrentHero.id"
+              (click)="handleDeleteHero()"
+            >
               <mat-icon>delete</mat-icon>
               Delete
             </button>
