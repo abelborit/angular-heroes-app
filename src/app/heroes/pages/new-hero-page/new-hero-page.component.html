@@ -6,30 +6,39 @@
   <div class="col-12 sm:col-6">
     <mat-card>
       <mat-card-content>
-        <div class="grid">
+        <!-- enlazar este formulario con el heroForm que es un formulario reactivo usando el [formGroup]="" y luego ir conectando campo por campo -->
+        <!-- al estar los campos ya conectados, el formulario reactivo enlazado y utilizar el required de Angular Material vemos que ya tendrá la validación, por ejemplo, si entramos a algún campo requerido y luego vamos a otro campo veremos que se pondrá rojo ya que está vacío y ahí podríamos colcoar algún mensaje más explícito para que se cumpla alguna expresión regular o algo similar -->
+        <form class="grid" [formGroup]="heroForm" (ngSubmit)="handleSubmit()">
           <mat-form-field class="col-12 sm:col-6">
             <mat-label>Super Hero</mat-label>
-            <input type="text" matInput required />
+            <!-- el required es más que todo para Angular Material para que le añada el asterisco de "Campo Obligatorio" -->
+            <!-- para conectar el input con el heroForm se utilizará el formControlName="" pero vemos que no tendrá el intellisense ya que básicamente le pasaremos un string, si queremos que sea dinámico podríamos colocarlo como [formControlName]="" pero en general este sería el nombre del campo el cual va a corresponder a la propiedad de heroForm -->
+            <input type="text" matInput required formControlName="superhero" />
           </mat-form-field>
 
           <mat-form-field class="col-12 sm:col-6">
             <mat-label>Alter Ego</mat-label>
-            <input type="text" matInput required />
+            <input type="text" matInput required formControlName="alter_ego" />
           </mat-form-field>
 
           <mat-form-field class="col-12">
             <mat-label>First Appearance</mat-label>
-            <input type="text" matInput required />
+            <input
+              type="text"
+              matInput
+              required
+              formControlName="first_appearance"
+            />
           </mat-form-field>
 
           <mat-form-field class="col-12">
             <mat-label>Characters</mat-label>
-            <input type="text" matInput required />
+            <input type="text" matInput required formControlName="characters" />
           </mat-form-field>
 
           <mat-form-field class="col-12">
             <mat-label>Publisher</mat-label>
-            <mat-select required>
+            <mat-select required formControlName="publisher">
               <mat-option
                 *ngFor="let publisher of publishers"
                 [value]="publisher.id"
@@ -38,7 +47,12 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
-        </div>
+
+          <mat-form-field class="col-12">
+            <mat-label>Alternative Image</mat-label>
+            <input type="text" matInput formControlName="alternative_img" />
+          </mat-form-field>
+        </form>
 
         <div class="flex justify-content-between">
           <button mat-flat-button color="warn">
@@ -46,7 +60,8 @@
             Delete
           </button>
 
-          <button mat-flat-button color="primary">
+          <!-- se coloca aquí también el handleSubmit() ya que el botón no está dentro del fomulario (un botón de tipo submit al estar dentro de un formulario y al presionar la tecla enter entonces se hace el submit automáticamente) -->
+          <button mat-flat-button color="primary" (click)="handleSubmit()">
             <mat-icon>save</mat-icon>
             Save
           </button>

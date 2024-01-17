@@ -8,6 +8,7 @@ import { Publisher } from '../../interfaces/hero.interface';
   styleUrls: ['./new-hero-page.component.css'],
 })
 export class NewHeroPageComponent {
+  /* una consideración a tener en cuenta es que cuando se trabajen con formularios reactivos es necesario que cada elemento de nuestro formulario tiene que estar adentro de un elemento HTML padre, es decir, si se coloca el id, superhero, publisher dentro del formulario entonces deben de tener un elemento HTML padre que los envuelva, por ejemplo, un div, form, etc... pero debe tener un elemento HTML padre donde en este caso usaremos una etiqueta <form></form> */
   /* aquí se podrían ir creando todas los inputs que voy a necesitar para el formulario y que sean un new FormControl() y asignarle un valor por defecto como por ejemplo public id = new FormControl(''); luego tener un public name = new FormControl(''); pero al hacerlo así no sería un formulario reactivo, serían solo propiedades reactivas que tenemos en nuestro componente, es decir, pequeñas piezas de controles que tenemos aquí en nuestro componente */
   /* pero para que sea un formulario reactivo crearemos una propiedad general que sea un FormGroup() y que tenga todos los inputs del formulario que serán FormControl(). Para las propiedades se están colocando el valor inicial como un string vacío entonces cada propiedad puede ser bien un string o null (ver eso si se presiona la tecla ctrl o control y luego se pasa el mouse por encima de la propiedad por ejemplo del id o superhero, etc...) pero en el caso del publisher no podría ser string o null ya que siempre tendría que venir, entonces vemor que el FormControl es un genérico donde se le puede colocar el tipo de dato que va a fluir dentro de él */
   public heroForm = new FormGroup({
@@ -30,6 +31,13 @@ export class NewHeroPageComponent {
       value: 'Marvel - Comics',
     },
   ];
+
+  handleSubmit(): void {
+    console.log({
+      formIsValid: this.heroForm.valid,
+      value: this.heroForm.value,
+    });
+  }
 }
 
 /* ******************************************************************************************************************* */
