@@ -6,7 +6,7 @@
 
 ### ¿Qué veremos en esta sección?
 
-En primer lugar veremos:
+#### \* En primer lugar veremos:
 
 Implementación de la carga perezosa aplicando el Lazyload y la forma como lo usaremos nos ayudará a manejar los dos posibles casos de uso donde uno de ellos es cuando la ruta hija no tiene estilo especial (concepto de layout para los componentes) y otra en la que requiere un estilo diferente por cada módulo.
 
@@ -18,7 +18,7 @@ El concepto de layout para los componentes hace referencia a que tendremos un co
 - Multiples estilos en la misma SPA
 - Concepto de layout para los componentes
 
-En segundo lugar veremos:
+#### \* En segundo lugar veremos:
 
 Aprender a utilizar Angular Material. Trabajaremos con muchos componentes de Angular material que ayudará a ver cualquier otro tipo de paquete modularizado de la misma manera y se sabrá cómo aplicarlo en el futuro.
 
@@ -30,6 +30,20 @@ Aprender a utilizar Angular Material. Trabajaremos con muchos componentes de Ang
 - Peticiones HTTP
 - JSON-Server
 - Prime Flex
+
+#### \* En tercer lugar veremos:
+
+Esta sección tendrá bases para poder realizar CRUD completos hacia cualquier backend basado en servicios web, mediante comunicación JSON
+
+- CRUD
+  - Create
+  - Read
+  - Update
+  - Delete
+- Pipes puros e impuros
+- Snacks
+- Dialogs
+- Inyección de servicios manualmente
 
 ### \* PASOS A REALIZAR:
 
