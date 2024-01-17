@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Publisher } from '../../interfaces/hero.interface';
+import { Hero, Publisher } from '../../interfaces/hero.interface';
+import { HeroesService } from '../../services/heroes.service';
 
 @Component({
   selector: 'app-new-hero-page',
@@ -32,11 +33,25 @@ export class NewHeroPageComponent {
     },
   ];
 
+  constructor(private heroesService: HeroesService) {}
+
+  /* hacer que un objeto luzca como si fuera un Hero y con esto evitar el problema de abajo. También al hacerlo de esta forma y tener el objeto como si fuera un tipo Hero ya se puede utilizar en el HTML por ejemplo para colocar la imagen. También tenemos ya los datos de forma centralizada */
+  get getCurrentHero(): Hero {
+    /* si se coloca "const hero = this.heroForm.value;" entonces nos aparece el mismo problema de que se espera recibir algo X y se manda algo Y pero que se ve como si fuera algo X, entonces para eso diremos que se comporte como un Hero, es decir, colocar ".... as Hero" */
+    const hero = this.heroForm.value as Hero;
+    return hero;
+  }
+
   handleSubmit(): void {
-    console.log({
-      formIsValid: this.heroForm.valid,
-      value: this.heroForm.value,
-    });
+    // console.log({
+    //   formIsValid: this.heroForm.valid,
+    //   value: this.heroForm.value,
+    // });
+
+    if (this.heroForm.invalid) return;
+
+    /* si se manda de esta forma "this.heroesService.updateHero(this.heroForm.value);" no son tipos compatibles, es decir, lo que se manda del formulario con lo que updateHero espera recibir técnicamente son lo mismo hasta cierto punto pero a la largo no lo son, por ejemplo, se espera recibir algo X y se manda algo Y pero que se ve como si fuera algo X, entonces técnicamente son lo mismo hasta cierto punto pero al final no lo son. En este aspecto TypeScript es bien restringido y aunque este formulario cumple la interface correctamente no se podría mandar de esa forma */
+    /* para solucionar lo anterior se utilizarán los getters dentro del componente que es la función que creamos getCurrentHero() y ahora ver si se hace la creación o actualización de un héroe */
   }
 }
 

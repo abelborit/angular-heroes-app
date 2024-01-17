@@ -72,7 +72,10 @@
 
   <div class="col-12 sm:col-6">
     <mat-card>
-      <img src="" alt="image hero" matCardImage />
+      <img [src]="getCurrentHero | heroImage" alt="image hero" matCardImage />
+
+      <!-- NO FUNCIONA DE ESTA FORMA PORQUE: por ejemplo, se espera recibir algo X y se manda algo Y pero que se ve como si fuera algo X -->
+      <!-- <img [src]="heroForm.value| heroImage" alt="image hero" matCardImage /> -->
     </mat-card>
   </div>
 </div>
