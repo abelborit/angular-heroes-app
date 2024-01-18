@@ -2,7 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { Error404PageComponent } from './shared/pages/error404-page/error404-page.component';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { AuthGuard } from './auth/guards/auth.guard';
 
+/* al ser el routing principal de la aplicación entonces se puede colocar que guards se apliquen o no a una ruta en particular */
 const routes: Routes = [
   /* path base auth/.... y que de ahí se carguen sus rutas aplicando lazyload */
   {
@@ -12,10 +14,14 @@ const routes: Routes = [
   },
 
   /* path base heroes/.... y que de ahí se carguen sus rutas aplicando lazyload */
+  /* este path de heroes tendría que estar protegido para que solo los usuarios autenticados la puedan ver */
   {
     path: 'heroes',
     loadChildren: () =>
       import('./heroes/heroes.module').then((module) => module.HeroesModule),
+    /* aquí se mandarán todos los guards que se necesitan para poder activar y que haga match esta ruta donde en este caso estaría solo el AuthGuard y entonces con esto Angular ya sabrá que como AuthGuard es un servicio que implementa el CanActivate y el CanMatch entonces va a mandar a llamar a esa función de CanActivate y CanMatch cuando sea necesario. Al pasarle un arreglo de los guards entonces se irán haciendo de forma secuencial por ejemplo [AuthGuard, guard2, gaurd3, ....] y ahí por ejemplo se podrían colocar rutas por protección por roles, posiciones, etc.... pero al momento de que falle un guard (sea cual sea) entonces lo guards siguientes ya no se ejecutarán */
+    canActivate: [AuthGuard],
+    canMatch: [AuthGuard],
   },
 
   {
