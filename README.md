@@ -98,6 +98,8 @@ Esta es una sección muy importante, donde controlaremos de forma básica una au
 
   - Otra forma de hacerlo dinámicamente: https://christianlydemann.com/implementing-dynamic-environments-in-angular-for-avoiding-one-build-per-environment/
 
+- Debido a la versión 16 de angular la forma de implementar los guard ha cambiado, por lo que ahora según la documentación de Angular se recomienda utilizar programación funcional. Por eso se hicieron ambas implementaciones utilizando los guards con clases usando con CanMatch - CanActive (que ya están deprecados) y la nueva forma de los guard que es con programación funcional con CanMatchFn - CanActivateFn.
+
 ---
 
 # AngularHeroesApp
