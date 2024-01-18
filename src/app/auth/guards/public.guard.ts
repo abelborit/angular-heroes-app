@@ -1,0 +1,79 @@
+/* se podría pensar que usando el getCurrentUser de auth.service.ts que retorna un User o undefined donde si es undefined no está autenticado porque no hay usuario, y , técnicamente esto es correcto y se podría determinar si estamos logueados o no, pero no es del todo cierto porque el acceso a ese getter es síncrono y al tratar de consumirlo o consultar su información siendo un proceso síncrono puede ser que el checkAuthentication aún no se haya disparado y para tener esa seguridad entonces solo usaremos el checkAuthentication para saber si hay o no algún usuario */
+
+/* ************************* USANDO IMPLEMENTACIÓN DEPRECADA (CanMatch - CanActive) ************************* */
+import { Injectable } from '@angular/core';
+import {
+  ActivatedRouteSnapshot,
+  CanActivate,
+  CanMatch,
+  Route,
+  Router,
+  RouterStateSnapshot,
+  UrlSegment,
+  UrlTree,
+} from '@angular/router';
+import { Observable, map, tap } from 'rxjs';
+import { AuthService } from '../services/auth.service';
+
+@Injectable({ providedIn: 'root' })
+export class PublicGuard implements CanMatch, CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
+
+  private checkAuthStatus():
+    | boolean
+    | UrlTree
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree> {
+    return this.authService.checkAuthentication().pipe(
+      tap((response) => {
+        /* si se cumple todo entonces aparecerán 3 veces false porque se está ejecutando esta función en el canMatch y canActivate que ya se explicó anteriormente el por qué aparecen tantas veces solo que aquí será con el valor false (probar cuando SI se esté autenticado ir a la ruta http://localhost:4200/#/auth/login) */
+        console.log({ response });
+
+        /* tener en cuenta que response está regresando un valor false en este caso al hacer logout porque nos está sacando de la aplicación y eso hace que no esté nadie autenticado pero eso trae un error el cual es que NO dejará pasar a la aplicación ni ver su contenido y en este caso ni si quiera se podrá ver el login porque estamos intentando cargar una ruta que está protegida y tampoco la puede activar y eso hace que no exista y por eso nos llevará a la ruta 404 que creamos pero técnicamente no debería llevarnos a la ruta 404 sino a la ruta del login ya que si el usuario no está autenticado nos debería llevar ahí y para eso usaremos el pipe map() para transformar la data */
+        if (response) {
+          /* si está autenticado entonces que me lleve al root del router de los heroes que sería /heroes y este me redirigirá a /heroes/list */
+          this.router.navigate(['./']);
+        }
+      }),
+      /* aquí se está usando el map() para cambiar el valor de la response anterior y de ser un valor false (el cual nos prohíbe entrar a la aplicación y cualquier ruta) de la respuesta del pipe tap() aquí devolverá un true donde ya nos dejaría poder ver algunas rutas que en este caso sería solo la ruta de login */
+      map((response) => !response)
+    );
+  }
+
+  canMatch(
+    route: Route,
+    segments: UrlSegment[]
+  ):
+    | boolean
+    | UrlTree
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree> {
+    // console.log('canMatch');
+    // console.log({ route, segments });
+
+    return this.checkAuthStatus();
+  }
+
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ):
+    | boolean
+    | UrlTree
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree> {
+    // console.log('canActivate');
+    // console.log({ route, state });
+
+    return this.checkAuthStatus();
+  }
+}
+
+/* ******************************************************************************************************************* */
+/* ******************************************************************************************************************* */
+/* ******************************************************************************************************************* */
+/* ******************************************************************************************************************* */
+
+/* ******************** USANDO NUEVA IMPLEMENTACIÓN FUNCIONAL (CanMatchFn - CanActivateFn) ******************** */
+/* antes del CanMatchFn era el CanMatch y antes de este era el canLoad donde los 3 son parecidos pero no son iguales. CanMatchFn hace referencia a que se pueda entrar a una ruta que haga cierto match de la url. (https://angular.io/api/router/CanMatchFn) */
+/* antes del CanActivateFn era el CanActivate los cuales son parecidos pero no son iguales. CanActivateFn para activar esa ruta en particular o la ruta en la cual colocamos este guard. (https://angular.io/api/router/CanActivateFn) */

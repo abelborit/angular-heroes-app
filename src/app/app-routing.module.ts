@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { Error404PageComponent } from './shared/pages/error404-page/error404-page.component';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { AuthGuard } from './auth/guards/auth.guard';
+import { PublicGuard } from './auth/guards/public.guard';
 
 /* al ser el routing principal de la aplicación entonces se puede colocar que guards se apliquen o no a una ruta en particular */
 const routes: Routes = [
@@ -11,6 +12,8 @@ const routes: Routes = [
     path: 'auth',
     loadChildren: () =>
       import('./auth/auth.module').then((module) => module.AuthModule),
+    canActivate: [PublicGuard],
+    canMatch: [PublicGuard],
   },
 
   /* path base heroes/.... y que de ahí se carguen sus rutas aplicando lazyload */
