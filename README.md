@@ -45,6 +45,19 @@ Esta sección tendrá bases para poder realizar CRUD completos hacia cualquier b
 - Dialogs
 - Inyección de servicios manualmente
 
+#### \* En cuarto lugar veremos:
+
+Esta es una sección muy importante, donde controlaremos de forma básica una autenticación, veremos cómo Angular nos puede servir para proteger nuestras rutas.
+
+- Protección de rutas
+- Rutas privadas
+- Rutas públicas
+- Servicio de autenticación
+- Guards (protectores de rutas)
+- Can Activate
+- Can Match
+- Mantener la sesión del usuario
+
 ### \* PASOS A REALIZAR:
 
 1. ejemplo
