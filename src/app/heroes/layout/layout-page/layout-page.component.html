@@ -27,12 +27,16 @@
   <!-- Menu que SÍ será visible -->
   <mat-toolbar color="primary">
     <button mat-icon-button (click)="sidenav.toggle()">
-      <mat-icon>menu</mat-icon>
+      <mat-icon color="accent">menu</mat-icon>
     </button>
+
+    <span>{{ getUser?.user }}</span>
 
     <span class="spacer"></span>
 
-    <button mat-button>Logout</button>
+    <button mat-button mat-raised-button (click)="handleLogout()">
+      Logout
+    </button>
   </mat-toolbar>
 
   <div class="container p-3">
