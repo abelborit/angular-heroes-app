@@ -53,16 +53,16 @@ export class AuthService {
     );
   }
 
-  checkAuthentication(): Observable<boolean> | boolean {
-    /* si no hay authToken en el localStorage entonces retorna un false porque la función checkAuthentication me pide que retorne un Observable que emite un valor boolean o sino que retorne un boolean */
-    if (!localStorage.getItem('authToken')) return false; // aquí retorna solo un false porque no es un observable porque si lo fuera entonces se tendría que colocar of(false) ya que el of(argumentos ) devuelve una instancia observable que entrega sincrónicamente un valor o valores que indica como argumentos
+  checkAuthentication(): Observable<boolean> {
+    /* si no hay authToken en el localStorage entonces retorna un Observable que emite un valor boolean que es false en este caso, porque la función checkAuthentication me pidía que retorne un Observable que emite un valor boolean o sino que retorne un boolean pero para evitar inconvenientes a futuro entonces que solo regrese un tipo de dato que será un observable que emita un boolean */
+    if (!localStorage.getItem('authToken')) return of(false); // aquí retorna un observable que emite un boolean porque el of(argumentos) devuelve una instancia observable que entrega sincrónicamente un valor o valores que indica como argumentos
 
     const authToken = localStorage.getItem('authToken');
 
     return this.httpClient.get<User>(`${this._baseUrl}/users/1`).pipe(
       tap((response) => (this._user = response)), // efecto secundario
-      map((response) => !!response), // transformar la data de response a un boolean porque la función checkAuthentication me pide que retorne un Observable que emite un valor boolean o sino que retorne un boolean porque si no se usa el map() entonces no cambia la data y estaría regresando un observable de tipo User. Recordar que el httpClient.get() ya retorna un observable entonces por eso en !!response no es necesario colocar el of()
-      catchError(() => of(false)) // por si hay un error retorna un Observable que emite un valor boolean
+      map((response) => !!response), // transformar la data de response a un boolean porque la función checkAuthentication me pide que retorne un Observable que emite un valor boolean y como dato adicional si no se usa el map() entonces no cambiaría la data y estaría regresando un observable de tipo User. Recordar que el httpClient.get() ya retorna un observable entonces por eso en !!response no es necesario colocar el of()
+      catchError(() => of(false)) // por si hay un error retorna un Observable que emite un valor boolean que es false en este caso
     );
   }
 
