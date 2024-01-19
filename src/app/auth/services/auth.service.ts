@@ -57,6 +57,7 @@ export class AuthService {
     /* si no hay authToken en el localStorage entonces retorna un Observable que emite un valor boolean que es false en este caso, porque la función checkAuthentication me pidía que retorne un Observable que emite un valor boolean o sino que retorne un boolean pero para evitar inconvenientes a futuro entonces que solo regrese un tipo de dato que será un observable que emita un boolean */
     if (!localStorage.getItem('authToken')) return of(false); // aquí retorna un observable que emite un boolean porque el of(argumentos) devuelve una instancia observable que entrega sincrónicamente un valor o valores que indica como argumentos
 
+    /* este authToken en un proyecto real se enviaría a un servidor con una petición post donde el servidor lo verificaría para determinar si el usuario está autenticado y tiene acceso a los recursos y funcionalidades protegidos */
     const authToken = localStorage.getItem('authToken');
 
     return this.httpClient.get<User>(`${this._baseUrl}/users/1`).pipe(
