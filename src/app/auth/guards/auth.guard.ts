@@ -2,112 +2,92 @@
 
 /* para hacer un guard entonces debe implementar una interfaz por lo menos, es decir, se tiene que implementar técnicamente una interfaz y esta interfaz va a depender de dónde queramos colocar este guard, por ejemplo, si queremos validar entonces el usuario cada vez que navegue por la aplicación (cada que vez entre a una página o ruta) entonces sería necesario hacer esta validación o si entra a una ruta padre entonces ya no hacerla, entre otros ejemplos */
 
-/* ************************* USANDO IMPLEMENTACIÓN DEPRECADA (CanMatch - CanActive) ************************* */
-import { Injectable } from '@angular/core';
+/* ******************** USANDO NUEVA IMPLEMENTACIÓN FUNCIONAL (CanMatchFn - CanActivateFn) ******************** */
+/* antes del CanMatchFn era el CanMatch y antes de este era el canLoad donde los 3 son parecidos pero no son iguales. CanMatchFn hace referencia a que se pueda entrar a una ruta que haga cierto match de la url, es decir, este activará la ruta si en la lógica devuelve true, y sino buscará si puede entrar a la siguiente ruta con el mismo path, entrará al primer path que haga match, y si fuera false, seguiría al siguiente path que haga match, y así. (https://angular.io/api/router/CanMatchFn) */
+/* antes del CanActivateFn era el CanActivate los cuales son parecidos pero no son iguales. CanActivateFn para activar esa ruta en particular o la ruta en la cual colocamos este guard, es decir, decide si se acepta o se deniega el acceso a una ruta basándose en la lógica que se le especifique al propio guard, validaría si puede entrar a la ruta que haga match y listo, pueda entrar o no. (https://angular.io/api/router/CanActivateFn) */
+
+import { inject } from '@angular/core'; // se importa esta libreria para poder inyectar dependencias sin constructor de clase
 import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  CanMatch,
+  CanMatchFn,
   Route,
   Router,
-  RouterStateSnapshot,
   UrlSegment,
-  UrlTree,
+  ActivatedRouteSnapshot,
+  CanActivateFn,
+  RouterStateSnapshot,
 } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
-@Injectable({ providedIn: 'root' })
-/* antes del CanMatch era el canLoad los cuales son parecidos pero no son iguales. El nombre de CanMatch hace referencia a que se pueda entrar a una ruta que haga cierto match de la url. (https://angular.io/api/router/CanMatch) */
-/* CanActivate es para activar esa ruta en particular o la ruta en la cual colocamos este guard. (https://angular.io/api/router/CanActivate) */
-export class AuthGuard implements CanMatch, CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+/* en este caso canMatchAuthGuard y canActivateAuthGuard estarán haciendo lo mismo entonces se hará una funcion que usarán tanto canMatchAuthGuard y canActivateAuthGuard con la finalidad de centralizar la lógica en un solo punto porque el código sería idéntico en ambos lugares aunque no siempre será así */
+/* aquí también se podría colocar para que pueda regresar un Promise<boolean> aunque solo se está trabajando con observables */
+const checkAuthStatus = (): Observable<boolean> | boolean => {
+  /* se inyectan el AuthService y el Router */
+  const authService: AuthService = inject(AuthService);
+  const router: Router = inject(Router);
 
-  /* al entrar a la consola del navegador nos daremos cuenta que canMatch se dispara dos veces y el canActivate solo una (si se descomenta PRIMERA FUNCIONALIDAD PARA PROBAR EL USO DE LOS GUARDS ahí se verá eso). Las dos veces del canMatch son porque está pasando dos veces, es decir, mandamos al usuario primero a pasa por /heroes y luego hace una redirección automáticamente a /list y eso está bien porque hay una ruta hija y entonces finalmente llega a la url /heroes/list (aparecerá dos veces también, por ejemplo, al entrar a un hero porque nuevamente es una ruta padre y luego una ruta hija de /heroes y luego /:id y así sucesivamente) y el canActivate solo una vez es porque ya está solicitando de que sí puede activar la ruta */
-
-  /* en este caso canMatch y canActivate estarán haciendo lo mismo entonces se hará un método que usará tanto canMatch y canActivate con la finalidad de centralizar la lógica en un solo punto porque el código sería idéntico en ambos lugares aunque no siempre será así */
-  private checkAuthStatus():
-    | boolean
-    | UrlTree
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree> {
-    /* authService.checkAuthentication() al retornar solo un observable y ya no un observable o un boolean entonces se pueden usar los pipes de RxJS */
-    /* el guard no se subscribe en el observable para que se pueda ejecutar porque internamente todos los guard pueden recibir directamente observables booleanos para su funcionamiento, por lo tanto, no es necesario realizar el subscribe y se está usando solo el pipe() */
-    return this.authService.checkAuthentication().pipe(
-      tap((response) => {
-        /* si se cumple todo entonces aparecerán 3 veces true porque se está ejecutando esta función en el canMatch y canActivate que ya se explicó arriba el por qué aparecen tantas veces pero si no se cumple entonces solo se verá un false (probar cuando NO se esté autenticado ir a la ruta http://localhost:4200/#/heroes/list) */
+  /* authService.checkAuthentication() al retornar solo un observable y ya no un observable o un boolean entonces se pueden usar los pipes de RxJS */
+  /* el guard no se subscribe en el observable para que se pueda ejecutar porque internamente todos los guard pueden recibir directamente observables booleanos para su funcionamiento, por lo tanto, no es necesario realizar el subscribe y se está usando solo el pipe() */
+  return authService.checkAuthentication().pipe(
+    tap((response) => {
+      if (!response) {
+        /* si se cumple todo entonces aparecerán un true y si no se cumple entonces un false. Probar cuando NO se está autenticado ir a la ruta http://localhost:4200/#/heroes/list porque nos devolverá un false y probar cuando SI se esté autenticado ir a la ruta http://localhost:4200/#/auth/login porque nos devolverá un true */
         console.log({ response });
+        router.navigate(['./auth/login']);
+      }
+    })
+  );
+};
 
-        if (!response) {
-          this.router.navigate(['./auth/login']);
-        }
-      })
-    );
-  }
+/* canMatchAuthGuard recibe cual es la ruta que quiere y los segmentos de url que también está solicitando y retornará algo de tipo CanMatchFn que es un type que tiene una función la cual retorna un Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree y al ser un boolean entonces puede recibir un true o un false y si es true entonces dejará pasar a la persona y si es false entonces el guard bloqueará o cancelará la petición haciendo que no pase la persona */
+export const canMatchAuthGuard: CanMatchFn = (
+  route: Route,
+  segments: UrlSegment[]
+) => {
+  /* PRIMERA FUNCIONALIDAD PARA PROBAR EL USO DE LOS GUARDS */
+  // console.log('CanMatchFn');
+  // console.log({ route, segments });
+  /* SI dejará pasar a la aplicación y ver su contenido */
+  // return true;
+  /* NO dejará pasar a la aplicación ni ver su contenido porque estamos intentando cargar una ruta que está protegida y tampoco la puede activar y eso hace que no exista y por eso nos llevará a la ruta 404 que creamos pero técnicamente no debería llevarnos a la ruta 404 sino a la ruta del login ya que si el usuario no está autenticado nos debería llevar ahí */
+  // return false;
 
-  /* canMatch recibe cual es la ruta que quiere y los segmentos de url que también está solicitando. Este canMatch retorna algo de tipo boolean o UrlTree o Observable<boolean | UrlTree> o Promise<boolean | UrlTree> los cuales si no se utilizan se pueden borrar algunos y entonces podría quedar: | boolean | Observable<boolean> y al ser un boolean entonces puede recibir un true o un false y si es true entonces dejará pasar a la persona y si es false entonces el guard bloqueará o cancelará la petición haciendo que no pase la persona */
-  canMatch(
-    route: Route,
-    segments: UrlSegment[]
-  ):
-    | boolean
-    | UrlTree
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree> {
-    /* PRIMERA FUNCIONALIDAD PARA PROBAR EL USO DE LOS GUARDS */
-    // console.log('canMatch');
-    // console.log({ route, segments });
-    /* SI dejará pasar a la aplicación y ver su contenido */
-    // return true;
-    /* NO dejará pasar a la aplicación ni ver su contenido porque estamos intentando cargar una ruta que está protegida y tampoco la puede activar y eso hace que no exista y por eso nos llevará a la ruta 404 que creamos pero técnicamente no debería llevarnos a la ruta 404 sino a la ruta del login ya que si el usuario no está autenticado nos debería llevar ahí */
-    // return false;
+  return checkAuthStatus();
+};
 
-    return this.checkAuthStatus();
-  }
+/* canActivateAuthGuard recibe cual es la ruta que quiere y el state que vendría a ser como el snapshot o fotografía de cómo está el router (argumentos, query parameters, la ruta, etc...) y retornará algo de tipo CanActivateFn que es un type que tiene una función la cual retorna un Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree y al ser un boolean entonces puede recibir un true o un false y si es true entonces dejará pasar a la persona y si es false entonces el guard bloqueará o cancelará la petición haciendo que no pase la persona */
+export const canActivateAuthGuard: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  // console.log('CanActivateFn');
+  // console.log({ route, state });
+  // return true;
+  // return false;
 
-  /* canActivate recibe cual es la ruta que quiere y el state que vendría a ser como el snapshot o fotografía de cómo está el router (argumentos, query parameters, la ruta, etc...). Este canActivate retorna algo de tipo boolean o UrlTree o Observable<boolean | UrlTree> o Promise<boolean | UrlTree> los cuales si no se utilizan se pueden borrar algunos y entonces podría quedar: | boolean | Observable<boolean> y al ser un boolean entonces puede recibir un true o un false y si es true entonces dejará pasar a la persona y si es false entonces el guard bloqueará o cancelará la petición haciendo que no pase la persona */
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ):
-    | boolean
-    | UrlTree
-    | Observable<boolean | UrlTree>
-    | Promise<boolean | UrlTree> {
-    /* PRIMERA FUNCIONALIDAD PARA PROBAR EL USO DE LOS GUARDS */
-    // console.log('canActivate');
-    // console.log({ route, state });
-    // return true;
-    // return false;
-
-    return this.checkAuthStatus();
-  }
-}
+  return checkAuthStatus();
+};
 
 /* ******************************************************************************************************************* */
-/* ¿Para que usar canLoad si ya canActivate hace las dos funciones? y cuando ya se esté logueado ¿Es correcto que siempre esté preguntándole al backend sobre el token (usuario) cada vez que entre a la ruta protegida? */
-/* Una conclusión es que ambos se complementan porque:
-- canLoad: evita que un módulo se cargue, por lo tanto no permite ingresar a la ruta protegida. Una vez que el módulo está cargado, el canLoad no hace nada, es por eso que por ejemplo, se podría navegar hacia las rutas protegidas aún cuando ya se haya cerrado sesión.
-
-- canActivate: no impide que el módulo se cargue, pero evita ingresar a una ruta protegida. Una vez el módulo esté cargado el usuario puede ver el código fuente de la aplicación de ese módulo al que no está autorizado.
-*/
-
-/* ******************************************************************************************************************* */
-/* ¿Por qué usar el pipe 'tap' en vez del suscribe en el canLoad y canActivate? Se puede usar con ambos, pero ¿Se realiza con el tap por alguna razón? Se vería más conveniente con el suscribe ya que no se va a seguir concatenando, pero por si hay algo que se nos escapa. */
+/* EJEMPLO DE USO */
 /*
-Michael Hladky sugiere que todos los side effects se encapsulen en el tap, aquí puedes ver la explicación: https://www.youtube.com/watch?v=XKfhGntZROQ&t=933s&ab_channel=ng-conf
+  {
+    path: 'dashboard',
+    canMatch: [() => canMatch(['ADMIN'])],
+    loadComponent: () => import('./dashboard/admin.component'),
+  },
+  {
+    path: 'dashboard',
+    canMatch: [() => canMatch(['MANAGER'])],
+    loadComponent: () => import('./dashboard/manager.component'),
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./dashboard/everyone.component'),
+  }
 
-Ahora, la diferencia con el tap o el subscribe, es cuando se ejecutaría este código, ya que el tap se ejecuta cada vez que se emite un valor, y el subscribe se ejecuta cuando se recibe un valor. Es decir:
+- Si usáramos canActivate, validaría si puede entrar a la ruta que haga match y listo, pueda entrar o no.
+- Con el canMatch, entrará al primer path que haga match, y si fuera false, seguiría al siguiente path que haga match, y así.
 
-  - Cuando se necesita añadir un side effect a un observable que se ejecute en cualquier suscripción, ahí se usaría un tap. Cuando necesites que en todas las suscripciones de ese observable se ejecute X código, podríamos usar un tap.
-  - Cuando quieres que la lógica sea independiente únicamente en un subscribe, entonces iría ahí, ya que tú puedes tener un observable, y estar suscrito al mismo en dos lugares distintos de tu app con diferente función, ahí usarías un subscribe.
+De esta forma tenemos un mismo path con diferentes posibilidades, en este caso dependiendo del rol.
 */
-
-/* ******************************************************************************************************************* */
-/* ******************************************************************************************************************* */
-/* ******************************************************************************************************************* */
-/* ******************************************************************************************************************* */
-
-/* ******************** USANDO NUEVA IMPLEMENTACIÓN FUNCIONAL (CanMatchFn - CanActivateFn) ******************** */
-/* antes del CanMatchFn era el CanMatch y antes de este era el canLoad donde los 3 son parecidos pero no son iguales. CanMatchFn hace referencia a que se pueda entrar a una ruta que haga cierto match de la url. (https://angular.io/api/router/CanMatchFn) */
-/* antes del CanActivateFn era el CanActivate los cuales son parecidos pero no son iguales. CanActivateFn para activar esa ruta en particular o la ruta en la cual colocamos este guard. (https://angular.io/api/router/CanActivateFn) */
