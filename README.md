@@ -102,28 +102,35 @@ Esta es una sección muy importante, donde controlaremos de forma básica una au
 
 ### \* IMÁGENES DE LA APLICACIÓN:
 
+#### - Desktop
+
 <div>
   <img src="./screenshotsApp/1_loginPage_Desktop.png" alt="image" width="400">
-  <img src="./screenshotsApp/2_loginPage_Mobile.png" alt="image" width="200">
-  <img src="./screenshotsApp/3_registerPage_Mobile.png" alt="image" width="200">
   <img src="./screenshotsApp/4_registerPage_Desktop.png" alt="image" width="400">
   <img src="./screenshotsApp/5_heroesLisPage_Desktop.png" alt="image" width="400">
-  <img src="./screenshotsApp/6_heroesLisPage_Mobile.png" alt="image" width="200">
   <img src="./screenshotsApp/7_addNewHeroPage_Desktop.png" alt="image" width="400">
-  <img src="./screenshotsApp/8_addNewHeroPage_Mobile_1.png" alt="image" width="200">
-  <img src="./screenshotsApp/9_addNewHeroPage_Mobile_2.png" alt="image" width="200">
   <img src="./screenshotsApp/10_heroesLisPage_menu_Desktop.png" alt="image" width="400">
-  <img src="./screenshotsApp/11_heroesLisPage_menu_Mobile.png" alt="image" width="200">
   <img src="./screenshotsApp/12_editHeroPage_loader_Desktop.png" alt="image" width="400">
-  <img src="./screenshotsApp/13_editHeroPage_loader_Mobile.png" alt="image" width="200">
   <img src="./screenshotsApp/14_editHeroPage_Desktop.png" alt="image" width="400">
-  <img src="./screenshotsApp/15_editHeroPage_Mobile_1.png" alt="image" width="200">
-  <img src="./screenshotsApp/16_editHeroPage_Mobile_2.png" alt="image" width="200">
   <img src="./screenshotsApp/17_heroPage_Desktop.png" alt="image" width="400">
-  <img src="./screenshotsApp/18_heroPage_Mobile_1.png" alt="image" width="200">
-  <img src="./screenshotsApp/19_heroPage_Mobile_2.png" alt="image" width="200">
   <img src="./screenshotsApp/20_searchHeroPage_Desktop_1.png" alt="image" width="400">
   <img src="./screenshotsApp/21_searchHeroPage_Desktop_2.png" alt="image" width="400">
+</div>
+
+#### - Mobile
+
+<div>
+  <img src="./screenshotsApp/2_loginPage_Mobile.png" alt="image" width="200">
+  <img src="./screenshotsApp/3_registerPage_Mobile.png" alt="image" width="200">
+  <img src="./screenshotsApp/6_heroesLisPage_Mobile.png" alt="image" width="200">
+  <img src="./screenshotsApp/8_addNewHeroPage_Mobile_1.png" alt="image" width="200">
+  <img src="./screenshotsApp/9_addNewHeroPage_Mobile_2.png" alt="image" width="200">
+  <img src="./screenshotsApp/11_heroesLisPage_menu_Mobile.png" alt="image" width="200">
+  <img src="./screenshotsApp/13_editHeroPage_loader_Mobile.png" alt="image" width="200">
+  <img src="./screenshotsApp/15_editHeroPage_Mobile_1.png" alt="image" width="200">
+  <img src="./screenshotsApp/16_editHeroPage_Mobile_2.png" alt="image" width="200">
+  <img src="./screenshotsApp/18_heroPage_Mobile_1.png" alt="image" width="200">
+  <img src="./screenshotsApp/19_heroPage_Mobile_2.png" alt="image" width="200">
   <img src="./screenshotsApp/22_searchHeroPage_Mobile_1.png" alt="image" width="200">
   <img src="./screenshotsApp/23_searchHeroPage_Mobile_2.png" alt="image" width="200">
 </div>
