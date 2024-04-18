@@ -20,4 +20,29 @@
   <div class="flex justify-content-end mt-5">
     <a routerLink="/auth/new-account">Don't have account?</a>
   </div>
+
+  <div class="flex flex-column gap-3 justify-content mt-5">
+    <span class="text-center">Lazy Load and Preload Module(s)</span>
+    <!-- haciendo click o haciendo hover sobre el botón llamará a la función -->
+    <button
+      (click)="preloadModule('heroes')"
+      (mouseover)="preloadModule('heroes')"
+      mat-button
+      mat-flat-button
+      color="primary"
+    >
+      Preload Heroes Module
+    </button>
+
+    <!-- haciendo click o haciendo hover sobre el botón llamará a la función -->
+    <button
+      (click)="preloadAllModules()"
+      (mouseover)="preloadAllModules()"
+      mat-button
+      mat-flat-button
+      color="primary"
+    >
+      Preload All Modules
+    </button>
+  </div>
 </div>

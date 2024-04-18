@@ -58,6 +58,18 @@ Esta es una sección muy importante, donde controlaremos de forma básica una au
 - Can Match
 - Mantener la sesión del usuario
 
+#### \* En quinto lugar veremos:
+
+Esta sección veremos algunas estrategias de precarga y sus configuraciones.
+
+- NoPreloading (default)
+- PreloadAllModules
+- Estrategias personalizadas:
+  - OptInPreloadingStrategy
+  - NetworkAwarePreloadStrategy
+- Estrategias totalmente personalizadas:
+  - OnDemandPreloadingStrategy
+
 ### \* PASOS A REALIZAR:
 
 1. ejemplo

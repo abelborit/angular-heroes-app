@@ -1,5 +1,10 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import {
+  NoPreloading,
+  PreloadAllModules,
+  RouterModule,
+  Routes,
+} from '@angular/router';
 import { Error404PageComponent } from './shared/pages/error404-page/error404-page.component';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import {
@@ -10,6 +15,9 @@ import {
   canActivatePublicGuard,
   canMatchPublicGuard,
 } from './auth/guards/public.guard';
+import { OptInPreloadingStrategy } from './preloading-strategies/opt-in-preloading-strategy';
+import { NetworkAwarePreloadStrategy } from './preloading-strategies/network-aware-preloading-strategy';
+import { OnDemandPreloadingStrategy } from './preloading-strategies/on-demand-preloading-strategy';
 
 /* al ser el routing principal de la aplicación entonces se puede colocar que guards se apliquen o no a una ruta en particular */
 const routes: Routes = [
@@ -31,6 +39,9 @@ const routes: Routes = [
     /* aquí se mandarán todos los guards que se necesitan para poder activar y que haga match esta ruta donde en este caso estarían el canActivateAuthGuard y canMatchAuthGuard y entonces con esto Angular ya sabrá que como canActivateAuthGuard y canMatchAuthGuard son funciones que trabajan con CanActivateFn y CanMatchFn respectivamente entonces va a mandar a llamar a esas funciones de canActivateAuthGuard y canMatchAuthGuard cuando sea necesario. Al pasarle un arreglo de los guards entonces se irán haciendo de forma secuencial por ejemplo [canActivateAuthGuard, guard2, gaurd3, ....] y ahí por ejemplo se podrían colocar rutas por protección por roles, posiciones, etc.... pero al momento de que falle un guard (sea cual sea) entonces lo guards siguientes ya no se ejecutarán */
     canActivate: [canActivateAuthGuard],
     canMatch: [canMatchAuthGuard],
+    data: {
+      preload: true, // true - false (para que SI precargue o NO precargue este módulo) ---> OptIn / OnDemand
+    },
   },
 
   {
@@ -52,7 +63,16 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(routes, {
+      /* aplicar estrategias de precarga según la configuración que hayamos hecho de las rutas NoPreloading (default) */
+      // preloadingStrategy: NoPreloading, // no precargar todas las rutas (no precargar los módulos) entonces sería lazy loading
+      // preloadingStrategy: PreloadAllModules, // vamos a precargar todas las rutas (precargar los módulos) entonces el dejarían de ser lazy loading
+      // preloadingStrategy: OptInPreloadingStrategy, // estrategia de precarga personalizada: OPCIONES EN RUTAS
+      // preloadingStrategy: NetworkAwarePreloadStrategy, // estrategia de precarga personalizada: COMPROBACIÓN DE CONEXIÓN A INTERNET
+      preloadingStrategy: OnDemandPreloadingStrategy, // estrategia de precarga totalmente personalizada: BAJO DEMANDA INICIADA POR EVENTO CONTROLADO DESDE EL SERVICIO "PreloadingService", es decir, hacer un servicio que se encargue de precargar módulos y que se active a través de eventos dentro del DOM, por ejemplo, al hacer un hover a un button hará que se cargue un módulo, etc
+    }),
+  ],
   exports: [RouterModule],
   /* para que no se tenga problemas al hacer algún deploy, por ejemplo, en GitHub Pages en este caso, porque la primera vez que se entra a la página desplegada que nos da GitHub Pages carga todo normal pero cuando se refresca entonces aparece un 404 Not Found propio de Git Hub Pages */
   providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }],
